@@ -1,8 +1,8 @@
 #![no_std]
 #![no_main]
 
-use core::panic::PanicInfo;
 use blog_os::{exit_qemu, serial_print, serial_println, QemuExitCode};
+use core::panic::PanicInfo;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
@@ -14,7 +14,7 @@ pub extern "C" fn _start() -> ! {
 
 fn should_fail() {
     serial_print!("should_panic::shoud_fail...\t");
-    assert_eq!(0,1);
+    assert_eq!(0, 1);
 }
 
 #[panic_handler]

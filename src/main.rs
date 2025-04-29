@@ -4,8 +4,8 @@
 #![test_runner(blog_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-use core::panic::PanicInfo;
 use blog_os::println;
+use core::panic::PanicInfo;
 
 #[unsafe(no_mangle)] // dont generate a random name for the function
 pub extern "C" fn _start() -> ! {
@@ -33,5 +33,5 @@ fn panic(info: &PanicInfo) -> ! {
 
 #[test_case]
 fn trivial_assertion() {
-    assert_eq!(1,1);
+    assert_eq!(1, 1);
 }
