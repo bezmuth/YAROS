@@ -51,6 +51,7 @@
             cargo-watch
             rust-analyzer
             cargo-bootimage
+            qemu
 
             # nice tools
             gdb rr
