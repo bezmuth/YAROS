@@ -2,15 +2,12 @@
 #![no_main]
 #![feature(abi_x86_interrupt)]
 
+use blog_os::{exit_qemu, serial_print, serial_println, QemuExitCode};
 use core::panic::PanicInfo;
 use lazy_static::lazy_static;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
-use blog_os::{exit_qemu, QemuExitCode, serial_println, serial_print};
 
-extern "x86-interrupt" fn test_double_fault_handler(
-    _sf: InterruptStackFrame,
-    _ec: u64,
-) -> !{
+extern "x86-interrupt" fn test_double_fault_handler(_sf: InterruptStackFrame, _ec: u64) -> ! {
     serial_println!("[ok]");
     exit_qemu(QemuExitCode::Success);
     loop {}
@@ -52,6 +49,6 @@ fn stack_overflow() {
 }
 
 #[panic_handler]
-fn panic(info: &PanicInfo) -> !{
+fn panic(info: &PanicInfo) -> ! {
     blog_os::test_panic_handler(info)
 }
