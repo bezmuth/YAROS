@@ -4,6 +4,19 @@
 #![test_runner(blog_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+/// NOTES
+///
+/// Im a bit shakey on the entire pages and memory allocation bit, everything
+/// else makes sense to me but following the chain of page thingys I do not understand
+///
+/// I think a page is a space in virtual memory and a frame is the corresponding
+/// part of "real" memory
+///
+/// it also seems like one of my tests is broken but that might be because of
+/// the mappers and stuff
+///
+/// Either way im on to heap allocation next
+
 use blog_os::{memory::BootInfoFrameAllocator, println};
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
