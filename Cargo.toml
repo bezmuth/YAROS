@@ -32,6 +32,12 @@ version = "0.3.4"
 default-features = false
 features = ["alloc"]
 
+[dependencies.futures-channel]
+version = "0.3.4"
+default-features = false
+features = ["alloc"]
+
+
 [package.metadata.bootimage]
 test-args = [
           "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04","-serial","stdio",

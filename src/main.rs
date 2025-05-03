@@ -24,29 +24,19 @@
 use blog_os::{
     allocator,
     memory::BootInfoFrameAllocator,
+    print,
     println,
     task::{keyboard, executor::Executor, Task},
 };
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 extern crate alloc;
-use alloc::{boxed::Box, rc::Rc, vec, vec::Vec};
-
-async fn async_number() -> u32 {
-    42
-}
-
-async fn example_task() {
-    let number = async_number().await;
-    println!("async number: {}", number);
-}
 
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     use blog_os::memory;
     use x86_64::VirtAddr;
-    println!("Hello World{}", "!");
     blog_os::init();
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
@@ -55,15 +45,15 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap init failure");
 
+
+    print!("> ");
     let mut executor = Executor::new();
-    executor.spawn(Task::new(example_task()));
-    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.spawn(Task::new(keyboard::process_keypresses()));
     executor.run();
 
     #[cfg(test)]
     test_main();
 
-    println!("It did not crash!");
     blog_os::hlt_loop()
 }
 
