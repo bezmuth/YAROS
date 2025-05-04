@@ -41,7 +41,8 @@ features = ["alloc"]
 [package.metadata.bootimage]
 test-args = [
           "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04","-serial","stdio",
-          "-display", "none"
+          "-display", "none",
+          "-drive" , "file=./disk.img,format=raw",
 ]
 test-success-exit-code = 33
 

@@ -1,4 +1,4 @@
-use crate::{print, println, shell};
+use crate::{println, shell};
 use conquer_once::spin::OnceCell;
 use core::{
     pin::Pin,
@@ -77,7 +77,7 @@ pub async fn process_keypresses() {
             if let Some(key) = keyboard.process_keyevent(key_event) {
                 match key {
                     DecodedKey::Unicode(character) => shell::handle_key(character),
-                    DecodedKey::RawKey(key) => {},
+                    DecodedKey::RawKey(_) => {}
                 }
             }
         }

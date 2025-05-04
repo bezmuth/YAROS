@@ -1,7 +1,8 @@
-use alloc::{string::String, vec::Vec};
+use crate::drivers::cmos;
 use crate::print;
-use spin::Mutex;
+use alloc::{string::String, vec::Vec};
 use lazy_static::lazy_static;
+use spin::Mutex;
 
 // implement this using async, not lazy_static (maybe?)
 
@@ -27,6 +28,10 @@ pub fn handle_key(c: char) {
                 for arg in args {
                     print!("{arg} ")
                 }
+            }
+            "time" => {
+                let time = cmos::get_time();
+                print!("{:02}:{:02}:{:02}", time.hours, time.minutes, time.seconds);
             }
             _ => {
                 print!("error failed to find command");

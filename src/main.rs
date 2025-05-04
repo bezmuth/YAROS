@@ -24,9 +24,8 @@
 use blog_os::{
     allocator,
     memory::BootInfoFrameAllocator,
-    print,
-    println,
-    task::{keyboard, executor::Executor, Task},
+    print, println,
+    task::{executor::Executor, keyboard, Task},
 };
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
@@ -45,16 +44,14 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap init failure");
 
+    #[cfg(test)]
+    test_main();
 
     print!("> ");
     let mut executor = Executor::new();
     executor.spawn(Task::new(keyboard::process_keypresses()));
     executor.run();
 
-    #[cfg(test)]
-    test_main();
-
-    blog_os::hlt_loop()
 }
 
 // this function is called on panic
