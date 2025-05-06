@@ -108,13 +108,16 @@ impl Writer {
         self.column_position = 0;
     }
     fn clear_row(&mut self, row: usize) {
+        for col in 0..BUFFER_WIDTH {
+            self.clear_char(col, row);
+        }
+    }
+    fn clear_char(&mut self, colum: usize, row: usize) {
         let blank = ScreenChar {
             ascii_character: b' ',
             color_code: self.color_code,
         };
-        for col in 0..BUFFER_WIDTH {
-            self.buffer.chars[row][col].write(blank);
-        }
+        self.buffer.chars[row][colum].write(blank);
     }
 }
 
@@ -142,6 +145,10 @@ pub fn set_cursor_pos(column: usize, row: usize) {
     let mut writer = WRITER.lock();
     writer.row_position = row;
     writer.column_position = column;
+}
+pub fn clear_char(col: usize, row: usize) {
+    let mut writer = WRITER.lock();
+    writer.clear_char(col, row);
 }
 pub fn clear_buffer() {
     let mut writer = WRITER.lock();

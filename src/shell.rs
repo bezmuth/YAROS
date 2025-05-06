@@ -1,4 +1,4 @@
-use crate::drivers::vga::{clear_buffer, get_cursor_pos, set_cursor_pos};
+use crate::drivers::vga;
 use crate::drivers::{self, cmos};
 use crate::{print, println};
 use alloc::{string::String, vec::Vec};
@@ -35,7 +35,7 @@ pub fn handle_key(c: char) {
                 print!("{:02}:{:02}:{:02}", time.hours, time.minutes, time.seconds);
             }
             "clear" => {
-                clear_buffer();
+                vga::clear_buffer();
             }
             _ => {
                 print!("error failed to find command");
@@ -45,12 +45,10 @@ pub fn handle_key(c: char) {
         print!("\n> ")
     } else if c as u8 == 0x8 {
         // backspace
-        if stdin.len() > 0 {
-            let (column, row) = get_cursor_pos();
-            set_cursor_pos(column - 1, row);
-            print!(" ");
-            stdin.pop();
-            set_cursor_pos(column - 1, row);
+        if stdin.pop().is_some() {
+            let (column, row) = vga::get_cursor_pos();
+            vga::clear_char(column - 1, row);
+            vga::set_cursor_pos(column - 1, row);
         }
     } else {
         stdin.push(c);
