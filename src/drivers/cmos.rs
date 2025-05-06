@@ -26,20 +26,15 @@ fn get_update_in_progress_flag() -> bool {
     return ((status >> 7) & 0b1) == 1;
 }
 fn get_register(register: Register) -> u8 {
-    let mut cmos_register: Port<u8> = Port::new(0x70);
-    let mut cmos_data: Port<u8> = Port::new(0x71);
-
     // nmi disable bit is set
-    unsafe { cmos_register.write((1 << 7) | register as u8) };
-    return unsafe { cmos_data.read() };
+    unsafe { Port::new(0x70).write((1 << 7) | register as u8) };
+    return unsafe { Port::new(0x71).read() };
 }
 
 fn set_register(register: Register, val: u8) {
-    let mut cmos_register: Port<u8> = Port::new(0x70);
-    let mut cmos_data: Port<u8> = Port::new(0x71);
     unsafe {
-        cmos_register.write((1 << 7) | register as u8);
-        cmos_data.write(val);
+        Port::new(0x70).write((1 << 7) | register as u8);
+        Port::new(0x71).write(val);
     };
 }
 
