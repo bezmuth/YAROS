@@ -4,28 +4,15 @@
 #![test_runner(blog_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-/// NOTES
-///
-/// Im a bit shakey on the entire pages and memory allocation bit, everything
-/// else makes sense to me but following the chain of page thingys I do not understand
-///
-/// I think a page is a space in virtual memory and a frame is the corresponding
-/// part of "real" memory
-///
-/// it also seems like one of my tests is broken but that might be because of
-/// the mappers and stuff
-///
-/// Okay so i think whenever we access memory it will be in the pages (or virt
-/// mem) not in the frames, which makes sense I just didnt think about it
-/// properly
-///
-/// https://github.com/vinc/moros  for an example of what I kinda wanna end up with
-/// https://github.com/vinc/moros/commits/trunk/?after=94e6038fc5643cbb5159f0ee92c76660cf98b9ab+699 for first few commits
+// NOTES
+//
+// https://github.com/vinc/moros  for an example of what I kinda wanna end up with
+// https://github.com/vinc/moros/commits/trunk/?after=94e6038fc5643cbb5159f0ee92c76660cf98b9ab+699 for first few commits
+//
+// TODO: get a proper vga driver implemented (i.e dynamic colours and cursor
+// changing) this will allow for backspace
 use blog_os::{
-    allocator,
-    memory::BootInfoFrameAllocator,
-    print, println,
-    task::{executor::Executor, keyboard, Task},
+    allocator, memory::BootInfoFrameAllocator, print, println, task::{executor::Executor, keyboard, Task}
 };
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
@@ -51,13 +38,13 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     let mut executor = Executor::new();
     executor.spawn(Task::new(keyboard::process_keypresses()));
     executor.run();
-
 }
 
 // this function is called on panic
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
+    use blog_os::println;
     println!("{}", info);
     blog_os::hlt_loop();
 }
