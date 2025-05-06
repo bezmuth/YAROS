@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]
-#![test_runner(blog_os::test_runner)]
+#![test_runner(yaros::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
 // NOTES
@@ -11,7 +11,7 @@
 //
 // TODO: get a proper vga driver implemented (i.e dynamic colours and cursor
 // changing) this will allow for backspace
-use blog_os::{
+use yaros::{
     allocator, memory::BootInfoFrameAllocator, print, println, task::{executor::Executor, keyboard, Task}
 };
 use bootloader::{entry_point, BootInfo};
@@ -21,9 +21,9 @@ extern crate alloc;
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    use blog_os::memory;
+    use yaros::memory;
     use x86_64::VirtAddr;
-    blog_os::init();
+    yaros::init();
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
@@ -44,15 +44,15 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    use blog_os::println;
+    use yaros::println;
     println!("{}", info);
-    blog_os::hlt_loop();
+    yaros::hlt_loop();
 }
 
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    blog_os::test_panic_handler(info)
+    yaros::test_panic_handler(info)
 }
 
 #[test_case]

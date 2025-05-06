@@ -30,8 +30,9 @@ impl FixedSizeBlockAllocator {
 
     /// Initialize the allocator with the given heap bounds
     pub unsafe fn init(&mut self, heap_start: usize, heap_size: usize) {
+        let heap_start_ptr = heap_start as *mut u8; // this might be broken but it seems fine
         unsafe {
-            self.fallback_allocator.init(heap_start, heap_size);
+            self.fallback_allocator.init(heap_start_ptr, heap_size);
         }
     }
 

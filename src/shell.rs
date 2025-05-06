@@ -1,6 +1,6 @@
 use crate::drivers::vga;
-use crate::drivers::{self, cmos};
-use crate::{print, println};
+use crate::drivers::cmos;
+use crate::print;
 use alloc::{string::String, vec::Vec};
 use lazy_static::lazy_static;
 use spin::Mutex;

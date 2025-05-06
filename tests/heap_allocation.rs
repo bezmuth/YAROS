@@ -1,24 +1,24 @@
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]
-#![test_runner(blog_os::test_runner)]
+#![test_runner(yaros::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
 extern crate alloc;
 
 use alloc::{boxed::Box, vec::Vec};
-use blog_os::allocator::HEAP_SIZE;
+use yaros::allocator::HEAP_SIZE;
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 
 entry_point!(main);
 
 fn main(boot_info: &'static BootInfo) -> ! {
-    use blog_os::allocator;
-    use blog_os::memory::{self, BootInfoFrameAllocator};
+    use yaros::allocator;
+    use yaros::memory::{self, BootInfoFrameAllocator};
     use x86_64::VirtAddr;
 
-    blog_os::init();
+    yaros::init();
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
@@ -30,7 +30,7 @@ fn main(boot_info: &'static BootInfo) -> ! {
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    blog_os::test_panic_handler(info)
+    yaros::test_panic_handler(info)
 }
 
 #[test_case]
