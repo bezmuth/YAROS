@@ -1,4 +1,4 @@
-use core::fmt;
+use core::{convert::TryInto, fmt};
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
@@ -119,18 +119,37 @@ impl Writer {
         };
         self.buffer.chars[row][colum].write(blank);
     }
+    fn draw_cursor(&self) {
+        // the cursor only works if the full vga buffer already has data in it,
+        // I presume because it needs the background and foreground colors. So
+        // when the kernel starts we need to "clear" the vga buffer
+        use x86_64::instructions::port::Port;
+        let pos = self.row_position * BUFFER_WIDTH + self.column_position;
+        let mut port_3d4 = Port::new(0x3d4);
+        let mut port_3d5 = Port::new(0x3d5);
+        unsafe{
+            port_3d4.write(0xA as u8);
+            port_3d5.write(0b000000 as u8); // enable cursor
+            port_3d4.write(0xF as u8); // cursor location high register
+            port_3d5.write((pos & 0xFF) as u8); // cursor location high register
+            port_3d4.write(0xE as u8); // cursor location low register
+            port_3d5.write(((pos >> 8) & 0xFF) as u8);  // cursor location low register
+        }
+
+    }
 }
 
 impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         self.write_string(s);
+        self.draw_cursor();
         Ok(())
     }
 }
 
 lazy_static! {
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
-        row_position: 1,
+        row_position: 0,
         column_position: 0,
         color_code: ColorCode::new(Color::White, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
@@ -145,6 +164,7 @@ pub fn set_cursor_pos(column: usize, row: usize) {
     let mut writer = WRITER.lock();
     writer.row_position = row;
     writer.column_position = column;
+    writer.draw_cursor();
 }
 pub fn clear_char(col: usize, row: usize) {
     let mut writer = WRITER.lock();

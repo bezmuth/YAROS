@@ -12,7 +12,7 @@
 // TODO: get a proper vga driver implemented (i.e dynamic colours and cursor
 // changing) this will allow for backspace
 use yaros::{
-    allocator, memory::BootInfoFrameAllocator, print, println, task::{executor::Executor, keyboard, Task}
+    allocator, drivers::vga, memory::BootInfoFrameAllocator, print, println, task::{executor::Executor, keyboard, Task}
 };
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
@@ -34,6 +34,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     #[cfg(test)]
     test_main();
 
+    vga::clear_buffer(); // cursor only works if the buffer already has data in it
     print!("> ");
     let mut executor = Executor::new();
     executor.spawn(Task::new(keyboard::process_keypresses()));
